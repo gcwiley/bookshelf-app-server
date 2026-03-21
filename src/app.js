@@ -81,8 +81,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(angularDistPath));
 
 // attach bucket to request
-app.use((req, _res, next) => {
-  req.locals.bucket = bucket;
+app.use((_req, res, next) => {
+  res.locals.bucket = bucket;
   next();
 });
 

@@ -9,11 +9,13 @@ const imageSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User', // this should match the model name you defined in user.js
       required: [true, 'An image must belong to a user.'],
+      index: true,
     },
     // public URL for accessing the image
     imageUrl: {
       type: String,
       required: [true, 'Image URL is required.'],
+      match: [/^https?:\/\//, 'Image URL must be a valid HTTP(S) URL'],
     },
     // the name/path of the file in cloud storage bucket
     // this is useful if you ever need to delete or manage the file directly
@@ -42,9 +44,11 @@ const imageSchema = new Schema(
     contentType: {
       type: String,
       required: [true, 'Content type is required.'],
+      match: [/^image\//, 'Content type must be an image MIME type.'],
     },
     size: {
-      type: Number, // size in bytes
+      type: Number,
+      min: [0, 'File size cannot be negative.'],
     },
     // the original name of the uploaded file
     originalName: {
