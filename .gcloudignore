@@ -1,0 +1,12 @@
+# this includes common exclusions to keep your deployment clean and secure:
+
+.gcloudignore
+.git
+.gitignore
+node_modules/
+.env
+.vscode/
+.idx/
+*.log
+to-do-list.md
+eslint.config.js

@@ -1,0 +1,19 @@
+# Ignore dependencies
+node_modules
+
+# Ignore environment files
+.env
+*.env.local
+
+# Ignore build output
+dist
+build
+
+# Ignore package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore editor and OS files
+.vscode
+.DS_Store

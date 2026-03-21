@@ -1,0 +1,34 @@
+{
+  "name": "bookshelf-server",
+  "description": "Bookshelf API for Angular Front End Web App",
+  "version": "1.0.0",
+  "private": true,
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "author": "Gregory Wiley",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chalk": "^5.5.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.2.1",
+    "firebase-admin": "^13.4.0",
+    "helmet": "^8.1.0",
+    "mongoose": "^8.17.1",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "uuid": "^11.1.0",
+    "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0",
+    "nodemon": "^3.1.10"
+  }
+}
