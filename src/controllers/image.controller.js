@@ -197,7 +197,9 @@ export const deleteImageById = async (req, res) => {
     if (exists) {
       await file.delete();
     } else {
-      console.warn(`File ${image.fileName} not found in bucket, removing from DB anyway.`);
+      console.warn(
+        `File ${image.fileName} not found in bucket, removing from DB anyway.`
+      );
     }
 
     // Delete from DB
@@ -214,6 +216,20 @@ export const deleteImageById = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+// DELETE MULTIPLE IMAGES
+export const bulkDeleteImages = async (req, res) => {
+  const { ids } = req.body; // array of image IDs
+  const images = await Image.find({ _id: { $in: ids }, user: req.user.id });
+  // Delete from Cloud Storage in parallel
+  await Promise.allSettled(
+    images.map((img) => req.bucket.file(img.fileName).delete())
+  );
+  await Image.deleteMany({ _id: { $in: ids }, user: req.user.id });
+  res
+    .status(200)
+    .json({ success: true, message: `${images.length} images deleted.` });
 };
 
 // COUNT IMAGES

@@ -1,13 +1,8 @@
 {
     // turns inline suggestions off
-    "editor.inlineSuggest.enabled": false,
+    "editor.inlineSuggest.enabled": true,
     // turns on clangd code completion
     "clangd.enableCodeCompletion": false,
-    "editor.quickSuggestions": {
-        "strings": "off",
-        "comments": "off",
-        "other": "off"
-    },
     // turns compact folders off in explorer
     "explorer.compactFolders": false,
     // turns the minimap off
@@ -25,6 +20,7 @@
     // list of words to be considered correct
     "cSpell.words": [
       "appspot",
+      "gcloudignore",
       "gregwiley",
       "maxlength"
     ]

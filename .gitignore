@@ -7,9 +7,6 @@
 # environmental variables file
 .env
 
-# Google App Engine config file
-app.yaml
-
 # Angular Dist Folder
 src/dist
 

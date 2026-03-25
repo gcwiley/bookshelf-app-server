@@ -1,6 +1,7 @@
 import { Book } from '../models/book.model.js';
 
 // NEW BOOK
+// description: Creates a new book. 
 export const newBook = async (req, res) => {
   try {
     const {
@@ -41,7 +42,7 @@ export const newBook = async (req, res) => {
   }
 };
 
-// GET BOOKS
+// GET BOOKS - description: Retrieves all books.
 export const getBooks = async (req, res) => {
   try {
     const books = await Book.find({});
@@ -69,7 +70,7 @@ export const getBooks = async (req, res) => {
   }
 };
 
-// GET BOOK PAGINATION
+// GET BOOK PAGINATION - description: Retrieves books in paginated format.
 export const getPaginatedBooks = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -96,7 +97,7 @@ export const getPaginatedBooks = async (req, res) => {
   }
 };
 
-// GET BOOK BY ID
+// GET BOOK BY ID - description: Retrieves a book by its ID.
 export const getBookById = async (req, res) => {
   // find id of book from params.
   const _id = req.params.id;
@@ -128,7 +129,7 @@ export const getBookById = async (req, res) => {
   }
 };
 
-// UPDATE BOOK BY ID
+// UPDATE BOOK BY ID - description: Updates a book by its ID.
 export const updateBookById = async (req, res) => {
   // get the id from params
   const _id = req.params.id;
@@ -159,7 +160,7 @@ export const updateBookById = async (req, res) => {
   }
 };
 
-// DELETE BOOK BY ID
+// DELETE BOOK BY ID - description: Deletes a book by its ID.
 export const deleteBookById = async (req, res) => {
   try {
     // finds and deletes a book that takes id into account
@@ -186,7 +187,7 @@ export const deleteBookById = async (req, res) => {
   }
 };
 
-// GET BOOK COUNT
+// GET BOOK COUNT - description: Retrieves the count of all books.
 export const getBookCount = async (req, res) => {
   try {
     const bookCount = await Book.countDocuments({});
@@ -205,7 +206,7 @@ export const getBookCount = async (req, res) => {
   }
 };
 
-// GET 5 RECENT BOOKS
+// GET 5 RECENT BOOKS - description: Retrieves the 5 most recently created books.
 export const getRecentlyCreatedBooks = async (req, res) => {
   try {
     const mostRecentBooks = await Book.find({})
@@ -233,7 +234,7 @@ export const getRecentlyCreatedBooks = async (req, res) => {
   }
 };
 
-// SEARCH BOOKS
+// SEARCH BOOKS - description: Searches for books by title or summary.
 export const searchBooks = async (req, res) => {
   const searchQuery = req.query.q;
 
@@ -262,7 +263,7 @@ export const searchBooks = async (req, res) => {
   }
 };
 
-// UPLOAD BOOK COVER
+// UPLOAD BOOK COVER - description: Uploads a book cover.
 export const uploadBookCover = async (req, res) => {
   const { id } = req.params; // book id from URL parameters
 

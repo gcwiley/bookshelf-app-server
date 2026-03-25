@@ -9,6 +9,12 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
+// --- LOAD SECRETS ---
+import { loadSecrets } from './secrets.js';
+
+// Load secrets before anything else
+await loadSecrets();
+
 // --- IMPORT DATABASE ---
 import { connect, disconnect } from './db/connect.js';
 
@@ -19,9 +25,13 @@ import { userRouter } from './routes/user.routes.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
+// get the directory name of the current module
 const __dirname = path.dirname(__filename);
+// port for the server to listen on
 const PORT = process.env.PORT || 3000;
+// CORS origin - must match your Angular app's URL
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:4200';
+// path to the Angular build output
 const angularDistPath = path.join(__dirname, './dist/bookshelf-client/browser');
 
 // --- FIREBASE CREDENTIALS ---

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 // create author schema
+// description: Creates an author schema.
 const authorSchema = new Schema(
   {
     name: {
@@ -21,6 +22,11 @@ const authorSchema = new Schema(
     timestamps: true,
   }
 );
+
+// 
+
+// index for sorting by creating date
+authorSchema.index({ createdAt: -1 });
 
 const Author = mongoose.model('Author', authorSchema);
 
