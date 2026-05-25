@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import validator from 'validator';
 const { Schema } = mongoose;
 
 // create the book schema
@@ -9,32 +10,33 @@ const bookSchema = new Schema(
       type: String,
       required: [true, 'Title is required.'],
       trim: true,
-      index: true, // improves query performance
+      index: true,
     },
-    // author
+    // book author
     author: {
       type: Schema.Types.ObjectId,
       ref: 'Author',
       required: [true, 'Author is required.'],
       index: true,
     },
-    // isbn - use a dedicated ISBN validation library
+    // isbn
     isbn: {
       type: String,
       required: [true, 'ISBN is required.'],
-      unique: true, // prevent duplicates
+      unique: true,
       trim: true,
       validate: {
         validator: function (v) {
-          return /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(v); // basic ISBN validation regex
+          return validator.isISBN(v);
         },
         message: (props) => `${props.value} is not a valid ISBN.`,
       },
     },
     // publication date
     publicationDate: {
-      type: Date, // use Date for better date handling
+      type: Date,
       required: [true, 'A date of publication is required.'],
+      max: [new Date(), 'Publication date cannot be in the future.'],
     },
     // page count
     pageCount: {
@@ -46,10 +48,22 @@ const bookSchema = new Schema(
     genre: {
       type: String,
       required: [true, 'A genre is required.'],
-      enum: ['Fiction', 'Non-Fiction', 'Science Fiction', 'Fantasy'],
+      enum: [
+        'Fiction',
+        'Non-Fiction',
+        'Science Fiction',
+        'Fantasy',
+        'Mystery',
+        'Thriller',
+        'Biography',
+        'History',
+        'Poetry',
+        'Romance',
+        'Other',
+      ],
     },
     // favorite
-    favorite: {
+    isFavorite: {
       type: Boolean,
       default: false,
     },
@@ -57,12 +71,56 @@ const bookSchema = new Schema(
     summary: {
       type: String,
       required: [true, 'A summary is required.'],
+      trim: true,
       maxlength: [1000, 'Summary cannot exceed 1000 characters.'],
     },
     // book cover image URL
     coverImageUrl: {
       type: String,
-      // not required, as it might be added later or not exist for all books
+      validate: {
+        validator: function (v) {
+          if (!v) return true; // optional
+          return validator.isURL(v);
+        },
+        message: (props) => `${props.value} is not a valid URL.`,
+      },
+    },
+    // book publisher
+    publisher: {
+      type: String,
+      trim: true,
+    },
+    // language
+    language: {
+      type: String,
+      trim: true,
+      default: 'English',
+    },
+    // published format
+    publishedFormat: {
+      type: String,
+      enum: ['Hardcover', 'Paperback', 'Ebook', 'Audiobook'],
+    },
+    // tags
+    tags: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    // rating
+    rating: {
+      averageRating: {
+        type: Number,
+        min: [0, 'Rating cannot be negative.'],
+        max: [5, 'Rating cannot exceed 5.'],
+        default: 0,
+      },
+      ratingsCount: {
+        type: Number,
+        default: 0,
+        min: [0, 'Ratings count cannot be negative.'],
+      },
     },
   },
   {
@@ -71,9 +129,8 @@ const bookSchema = new Schema(
 );
 
 // index the createdAt field for sorting
-bookSchema.index({ createdAt: -1 }); // -1 indicates descending order is common for this sort
+bookSchema.index({ createdAt: -1 });
 
-// create book model
 const Book = mongoose.model('Book', bookSchema);
 
 export { Book };

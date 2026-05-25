@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock the Secret Manager client before importing
+// mock the Secret Manager client before importing
 vi.mock('@google-cloud/secret-manager', () => ({
   SecretManagerServiceClient: vi.fn().mockImplementation(() => ({
     accessSecretVersion: vi.fn().mockResolvedValue([
@@ -11,14 +11,15 @@ vi.mock('@google-cloud/secret-manager', () => ({
   })),
 }));
 
-// Now import the function under test
+// now import the function under test
 const { getSecret } = await import('../secrets.js');
 
 describe('getSecret', () => {
-  it('throws if GOOGLE_CLOUD_PROJECT is not set', async () => {
+  it('throws if project ID environment variables are not set', async () => {
     delete process.env.GOOGLE_CLOUD_PROJECT;
+    delete process.env.SECRETS_PROJECT_ID;
     await expect(getSecret('TEST_SECRET')).rejects.toThrow(
-      'GOOGLE_CLOUD_PROJECT environment variable is not set.'
+      'Neither SECRETS_PROJECT_ID nor GOOGLE_CLOUD_PROJECT environment variable is set.'
     );
   });
 

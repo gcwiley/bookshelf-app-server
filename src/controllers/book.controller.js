@@ -1,7 +1,6 @@
 import { Book } from '../models/book.model.js';
 
 // NEW BOOK
-// description: Creates a new book. 
 export const newBook = async (req, res) => {
   try {
     const {
@@ -11,9 +10,14 @@ export const newBook = async (req, res) => {
       publicationDate,
       pageCount,
       genre,
-      favorite,
+      isFavorite,
       summary,
       coverImageUrl,
+      publisher,
+      language,
+      publishedFormat,
+      tags,
+      rating,
     } = req.body;
 
     const book = new Book({
@@ -23,9 +27,14 @@ export const newBook = async (req, res) => {
       publicationDate,
       pageCount,
       genre,
-      favorite: favorite || false, // set default if not provided
+      isFavorite: isFavorite || false,
       summary,
       coverImageUrl,
+      publisher,
+      language,
+      publishedFormat,
+      tags,
+      rating,
     });
     // saves new book to the database
     await book.save();
@@ -42,36 +51,8 @@ export const newBook = async (req, res) => {
   }
 };
 
-// GET BOOKS - description: Retrieves all books.
+// GET ALL BOOKS (PAGINATION)
 export const getBooks = async (req, res) => {
-  try {
-    const books = await Book.find({});
-
-    // if no books are found
-    if (books.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'No books found.' });
-    }
-
-    // send the list of books back to the client
-    res.status(200).json({
-      success: true,
-      message: 'Successfully retrieved books.',
-      data: books,
-    });
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching books.',
-      error: error.message,
-    });
-  }
-};
-
-// GET BOOK PAGINATION - description: Retrieves books in paginated format.
-export const getPaginatedBooks = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
@@ -97,7 +78,7 @@ export const getPaginatedBooks = async (req, res) => {
   }
 };
 
-// GET BOOK BY ID - description: Retrieves a book by its ID.
+// GET BOOK BY ID
 export const getBookById = async (req, res) => {
   // find id of book from params.
   const _id = req.params.id;
@@ -129,7 +110,7 @@ export const getBookById = async (req, res) => {
   }
 };
 
-// UPDATE BOOK BY ID - description: Updates a book by its ID.
+// UPDATE BOOK BY ID
 export const updateBookById = async (req, res) => {
   // get the id from params
   const _id = req.params.id;
@@ -160,7 +141,7 @@ export const updateBookById = async (req, res) => {
   }
 };
 
-// DELETE BOOK BY ID - description: Deletes a book by its ID.
+// DELETE BOOK BY ID
 export const deleteBookById = async (req, res) => {
   try {
     // finds and deletes a book that takes id into account
@@ -187,7 +168,7 @@ export const deleteBookById = async (req, res) => {
   }
 };
 
-// GET BOOK COUNT - description: Retrieves the count of all books.
+// GET BOOK COUNT
 export const getBookCount = async (req, res) => {
   try {
     const bookCount = await Book.countDocuments({});
@@ -206,7 +187,7 @@ export const getBookCount = async (req, res) => {
   }
 };
 
-// GET 5 RECENT BOOKS - description: Retrieves the 5 most recently created books.
+// GET 5 RECENT BOOKS
 export const getRecentlyCreatedBooks = async (req, res) => {
   try {
     const mostRecentBooks = await Book.find({})
@@ -234,7 +215,7 @@ export const getRecentlyCreatedBooks = async (req, res) => {
   }
 };
 
-// SEARCH BOOKS - description: Searches for books by title or summary.
+// SEARCH ALL BOOKS
 export const searchBooks = async (req, res) => {
   const searchQuery = req.query.q;
 
@@ -263,7 +244,7 @@ export const searchBooks = async (req, res) => {
   }
 };
 
-// UPLOAD BOOK COVER - description: Uploads a book cover.
+// UPLOAD BOOK COVER
 export const uploadBookCover = async (req, res) => {
   const { id } = req.params; // book id from URL parameters
 

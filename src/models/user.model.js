@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-// create the user schema
 const userSchema = new Schema(
   {
     // first name
@@ -20,7 +19,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: [true, 'Email is required.'],
-      unique: true, // ensure no duplicate emails in MongoDB
+      unique: true,
       trim: true,
       lowercase: true,
       match: [
@@ -28,26 +27,24 @@ const userSchema = new Schema(
         'Please enter a valid email address',
       ],
     },
-    // LINK TO FIREBASE: This is the critical new field
+    // LINK TO FIREBASE
     firebaseUid: {
       type: String,
       required: [true, 'Firebase UID is required.'],
       unique: true,
       index: true, // indexing allows for fast lookups during login
     },
-    // optional: store the profile image URL here
+    // profile image URL
     profileImageUrl: {
       type: String,
       default: null,
     },
   },
   {
-    // automatically adds `createdAt` and `updatedAt` fields
     timestamps: true,
   }
 );
 
-// create the user model
 const User = mongoose.model('User', userSchema);
 
 export { User };

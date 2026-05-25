@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 // middleware
-import { authenticate } from '../middleware/auth.middleware.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
 
 // user controller functions
 import {
@@ -17,10 +17,10 @@ router.post('/signup', signUp);
 
 // GET /api/users/profile
 // protected route: requires a valid Firebase ID token in the header
-router.get('/profile', authenticate, getProfile);
+router.get('/profile', authenticateToken, getProfile);
 
 // DELETE /api/users/:id
 // protected route: requires authentication
-router.delete('/:id', authenticate, deleteUser);
+router.delete('/:id', authenticateToken, deleteUser);
 
 export { router as userRouter };

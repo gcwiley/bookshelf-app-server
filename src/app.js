@@ -9,19 +9,14 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
-// --- LOAD SECRETS ---
+// load secrets first
 import { loadSecrets } from './secrets.js';
-
-// Load secrets before anything else
 await loadSecrets();
 
-// --- IMPORT DATABASE ---
-import { connect, disconnect } from './db/connect.js';
-
-// --- IMPORT ROUTERS ---
-import { bookRouter } from './routes/book.routes.js';
-import { imageRouter } from './routes/image.routes.js';
-import { userRouter } from './routes/user.routes.js';
+// dynamically import application dependencies after secrets are in process.env
+const { connect, disconnect } = await import('./db/connect.js');
+const { bookRouter } = await import('./routes/book.routes.js');
+const { userRouter } = await import('./routes/user.routes.js');
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
@@ -35,28 +30,35 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:4200';
 const angularDistPath = path.join(__dirname, './dist/bookshelf-client/browser');
 
 // --- FIREBASE CREDENTIALS ---
-let serviceAccount;
-try {
-  serviceAccount = JSON.parse(
+let serviceAccountCredential;
+
+if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
+  serviceAccountCredential = admin.credential.applicationDefault();
+} else {
+  // local development fallback
+  const serviceAccountJson = JSON.parse(
     readFileSync(
       path.join(__dirname, '../credentials/service-account.json'),
       'utf-8'
     )
   );
-} catch (error) {
-  console.error(chalk.red('Error reading service account file:'), error);
-  process.exit(1);
+  serviceAccountCredential = admin.credential.cert(serviceAccountJson);
 }
 
 // --- FIREBASE INIT ---
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: `${serviceAccount.project_id}.appspot.com`,
+  credential: serviceAccountCredential,
+  storageBucket: `${process.env.GOOGLE_CLOUD_PROJECT || 'bookshelf-app-b9508'}.appspot.com`,
 });
 const bucket = admin.storage().bucket();
 
 // --- EXPRESS SETUP ---
 const app = express();
+
+// trust first proxy (GAE load balancer)
+if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
+  app.set('trust proxy', 1);
+}
 
 // --- HELMET ---
 app.use(
@@ -64,7 +66,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // tighten as needed
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'https://storage.googleapis.com'],
       },
@@ -110,7 +112,6 @@ app.use('/api', apiLimiter);
 
 // --- ROUTES ---
 app.use('/api/books', bookRouter);
-app.use('/api/images', imageRouter);
 app.use('/api/users', userRouter);
 
 // API 404 handler - must come BEFORE the catch-all

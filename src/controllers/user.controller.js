@@ -1,21 +1,19 @@
 import admin from 'firebase-admin';
 import { User } from '../models/user.model.js';
 
-// SIGN UP (Create User in Firebase & MongoDB)
+// SIGN UP NEW USER
 export const signUp = async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
 
   try {
-    // 1. Create user in Firebase Authentication
-    // This ensures valid credentials before touching the database
+    // Create user in Firebase Authentication
     const firebaseUser = await admin.auth().createUser({
       email,
       password,
       displayName: `${firstName} ${lastName}`,
     });
 
-    // 2. Create user in MongoDB
-    // We store the 'firebaseUid' to link the authentication record to the data record
+    // Create user in MongoDB
     const user = new User({
       firstName,
       lastName,
@@ -56,9 +54,7 @@ export const signUp = async (req, res) => {
   }
 };
 
-// GET USER PROFILE (The Backend "Sign In")
-// This endpoint is called AFTER the client logs in with Firebase.
-// Requires the 'authenticate' middleware to be used in the route.
+// GET USER PROFILE
 export const getProfile = async (req, res) => {
   try {
     // req.user comes from your 'authenticate' middleware
