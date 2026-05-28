@@ -1,22 +1,11 @@
-import path from 'path';
 import mongoose from 'mongoose';
 import chalk from 'chalk';
-import * as dotenv from 'dotenv';
 
-// environment variables
-dotenv.config({
-  path: path.resolve(process.cwd(), '.env'),
-  debug: process.env.NODE_ENV === 'development',
-  encoding: 'UTF-8',
-});
-
-// module-level connection state
-let uri;
-let dbName;
-
-// --- event listeners ---
+// --- Event Listeners ---
 mongoose.connection.on('connected', () => {
-  console.log(chalk.green(`Mongoose connected to ${dbName}`));
+  // Dynamically retrieve the DB name from mongoose connection properties
+  const dbName = mongoose.connection.name || 'MongoDB';
+  console.log(chalk.green(`Mongoose connected to database: ${dbName}`));
 });
 
 mongoose.connection.on('error', (error) => {
@@ -27,38 +16,40 @@ mongoose.connection.on('disconnected', () => {
   console.warn(chalk.yellow('Mongoose disconnected'));
 });
 
-// -- main connect function ---
+// --- Main Connect Function ---
 async function connect() {
-  // extract and validate at execution time
-  uri = process.env.MONGO_CONNECTION_STRING;
-  dbName = process.env.DATABASE_NAME;
+  const uri = process.env.MONGO_CONNECTION_STRING;
+  const dbName = process.env.DATABASE_NAME;
 
   if (!uri) {
-    throw new Error(
-      'MONGO_CONNECTION_STRING is not defined in the environment variables.'
-    );
+    throw new Error('MONGO_CONNECTION_STRING is not defined in the environment variables.');
   }
   if (!dbName) {
-    throw new Error(
-      'DATABASE_NAME is not defined in the environment variables.'
-    );
+    throw new Error('DATABASE_NAME is not defined in the environment variables.');
   }
 
-  // set mongoose options
+  // Set Mongoose options
   mongoose.set('strictQuery', true);
 
-  // establish connection
-  await mongoose.connect(uri, { dbName });
+  // Establish connection with timeout configurations for production resilience
+  const options = {
+    dbName,
+    connectTimeoutMS: 10000, // Give up initial connection after 10s
+    socketTimeoutMS: 45000,  // Close inactive sockets after 45s
+  };
+
+  await mongoose.connect(uri, options);
+  
   console.log(
     chalk.blue(
       '\n',
-      `Successfully connected to the NOSQL database - ${dbName}.`,
+      `Successfully connected to the NoSQL database - ${dbName}.`,
       '\n'
     )
   );
 }
 
-// -- disconnect function ---
+// --- Disconnect Function ---
 async function disconnect() {
   await mongoose.connection.close();
   console.log(chalk.blue('Mongoose connection closed.'));
