@@ -1,4 +1,6 @@
+import mongoose from 'mongoose';
 import { Book } from '../models/book.model.js';
+import { Author } from '../models/author.model.js';
 
 // NEW BOOK
 export const newBook = async (req, res) => {
@@ -58,7 +60,7 @@ export const getBooks = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const books = await Book.find({}).skip(skip).limit(limit);
+    const books = await Book.find({}).populate('author').skip(skip).limit(limit);
     const totalBooks = await Book.countDocuments();
 
     res.status(200).json({
@@ -85,7 +87,7 @@ export const getBookById = async (req, res) => {
 
   try {
     // filter by _id
-    const book = await Book.findById({ _id });
+    const book = await Book.findById(_id).populate('author');
 
     // if no book by ID is found
     if (!book) {
@@ -266,7 +268,7 @@ export const uploadBookCover = async (req, res) => {
     const fileExtension = file.originalname.split('.').pop();
     const fileName = `covers/${book._id}-${Date.now()}.${fileExtension}`;
 
-    const fileUpload = req.locals.bucket.file(fileName);
+    const fileUpload = res.locals.bucket.file(fileName);
 
     const blobStream = fileUpload.createWriteStream({
       metadata: {

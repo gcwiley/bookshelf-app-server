@@ -11,6 +11,7 @@ import rateLimit from 'express-rate-limit';
 
 // load secrets first
 import { loadSecrets } from './secrets.js';
+await loadSecrets(); // ensure environment variables are fully loaded
 
 // dynamically import application dependencies after secrets are in process.env
 const { connect, disconnect } = await import('./db/connect.js');
@@ -139,7 +140,6 @@ app.use((error, req, res, next) => {
 // --- STARTUP SEQUENCE ---
 const startServer = async () => {
   try {
-    await loadSecrets()
     await connect();
 
     const server = app.listen(PORT, () => {

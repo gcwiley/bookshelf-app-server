@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file=.env src/app.js",
-    "dev": "nodemon --env-file=.env src/app.js"
+    "dev": "node --env-file=.env --watch src/app.js"
   },
   "author": "Gregory Wiley",
   "license": "MIT",
@@ -15,7 +15,6 @@
     "@google-cloud/secret-manager": "^6.1.1",
     "chalk": "^5.5.0",
     "cors": "^2.8.6",
-    "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "express-rate-limit": "^8.2.1",
     "firebase-admin": "^13.4.0",
@@ -30,6 +29,6 @@
     "@eslint/js": "^9.33.0",
     "eslint": "^9.33.0",
     "globals": "^16.3.0",
-    "nodemon": "^3.1.10"
+    "vitest": "^4.1.9"
   }
 }

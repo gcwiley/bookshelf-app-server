@@ -37,6 +37,12 @@ const bookSchema = new Schema(
       type: Date,
       required: [true, 'A date of publication is required.'],
       max: [new Date(), 'Publication date cannot be in the future.'],
+      validate: {
+        validator: function (v) {
+          return v <= new Date();
+        },
+        message: 'Publication date cannot be in the future.'
+      }
     },
     // page count
     pageCount: {
