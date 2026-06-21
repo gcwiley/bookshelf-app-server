@@ -266,7 +266,7 @@ export const uploadBookCover = async (req, res) => {
     const fileExtension = file.originalname.split('.').pop();
     const fileName = `covers/${book._id}-${Date.now()}.${fileExtension}`;
 
-    const fileUpload = req.bucket.file(fileName);
+    const fileUpload = req.locals.bucket.file(fileName);
 
     const blobStream = fileUpload.createWriteStream({
       metadata: {

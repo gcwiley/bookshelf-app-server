@@ -8,18 +8,9 @@ import logger from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import * as dotenv from 'dotenv';
-
-// load environment variables
-dotenv.config({
-  path: path.resolve(process.cwd(), '.env'),
-  debug: process.env.NODE_ENV === 'development',
-  encoding: 'UTF-8'
-})
 
 // load secrets first
 import { loadSecrets } from './secrets.js';
-await loadSecrets();
 
 // dynamically import application dependencies after secrets are in process.env
 const { connect, disconnect } = await import('./db/connect.js');
@@ -102,6 +93,7 @@ app.use(express.static(angularDistPath));
 
 // attach bucket to request
 app.use((_req, res, next) => {
+  // attach the bucket to the response for use in route handlers
   res.locals.bucket = bucket;
   next();
 });
@@ -147,6 +139,7 @@ app.use((error, req, res, next) => {
 // --- STARTUP SEQUENCE ---
 const startServer = async () => {
   try {
+    await loadSecrets()
     await connect();
 
     const server = app.listen(PORT, () => {

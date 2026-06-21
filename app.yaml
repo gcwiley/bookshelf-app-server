@@ -1,14 +1,17 @@
 runtime: nodejs24
 
+# runtime config
 instance_class: F1
 
+# optional performance settings
 automatic_scaling:
-  min_instances: 0
-  max_instances: 5
-  target_cpu_utilization: 0.65
-  max_concurrent_requests: 10
+  min_instances: 0 # min instances that can be run
+  max_instances: 5 # max instances that can be run
+  target_cpu_utilization: 0.65 # scale up when CPU usage is above this threshold
+  max_concurrent_requests: 10 # max number of requests that can be handled at once per instance
 
+# runtime configuration for secrets and db name
 env_variables:
-  NODE_ENV: 'production'
+  NODE_ENV: 'production' # set to production for production deployment
   SECRETS_PROJECT_ID: 'lyrical-amulet-495920-u8' # add the project ID hosting the secrets here
-  DATABASE_NAME: 'mongo-database'
+  DATABASE_NAME: 'mongo-database' # set the database name here

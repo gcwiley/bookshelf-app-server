@@ -3,15 +3,17 @@ import chalk from 'chalk';
 
 // --- Event Listeners ---
 mongoose.connection.on('connected', () => {
-  // Dynamically retrieve the DB name from mongoose connection properties
+  // dynamically retrieve the DB name from mongoose connection properties
   const dbName = mongoose.connection.name || 'MongoDB';
   console.log(chalk.green(`Mongoose connected to database: ${dbName}`));
 });
 
+// Handle connection errors
 mongoose.connection.on('error', (error) => {
   console.error(chalk.red(`Mongoose connection error: ${error}`));
 });
 
+// Handle disconnection
 mongoose.connection.on('disconnected', () => {
   console.warn(chalk.yellow('Mongoose disconnected'));
 });
@@ -36,6 +38,7 @@ async function connect() {
     dbName,
     connectTimeoutMS: 10000, // Give up initial connection after 10s
     socketTimeoutMS: 45000,  // Close inactive sockets after 45s
+    autoIndex: process.env.NODE_ENV !== 'production',
   };
 
   await mongoose.connect(uri, options);
