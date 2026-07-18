@@ -1,17 +1,21 @@
+# This is the configuration file for deploying the Node.js application to Google App Engine.
+
+# The runtime specifies the Node.js version to use. Node.js 24 is the latest LTS version as of this writing.
 runtime: nodejs24
 
-# runtime config
+# The instance class defines the amount of memory and CPU available to your application.
+# F1 is the smallest instance class, suitable for low-traffic applications. You can adjust this based on your app's performance needs and budget.
 instance_class: F1
 
-# optional performance settings
+# The automatic_scaling section configures how the application scales based on traffic. You can adjust the min_instances and max_instances values based on your expected traffic and budget. The target_cpu_utilization and max_concurrent_requests settings help optimize performance and resource usage.
 automatic_scaling:
-  min_instances: 0 # min instances that can be run
-  max_instances: 5 # max instances that can be run
-  target_cpu_utilization: 0.65 # scale up when CPU usage is above this threshold
-  max_concurrent_requests: 10 # max number of requests that can be handled at once per instance
+  min_instances: 0 # Set to 0 to allow the app to scale down to zero when not in use
+  max_instances: 5 # Adjust this based on your expected traffic and budget
+  target_cpu_utilization: 0.65 # Adjust this based on your app's performance characteristics
+  max_concurrent_requests: 10
 
-# runtime configuration for secrets and db name
+# The env_variables section is used to define environment variables that your application can access. These variables can include sensitive information such as API keys or database connection strings.
 env_variables:
-  NODE_ENV: 'production' # set to production for production deployment
+  NODE_ENV: 'production'
   SECRETS_PROJECT_ID: 'lyrical-amulet-495920-u8' # add the project ID hosting the secrets here
-  DATABASE_NAME: 'mongo-database' # set the database name here
+  DATABASE_NAME: 'mongo-database'

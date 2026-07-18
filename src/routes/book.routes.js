@@ -11,6 +11,7 @@ import {
   getBookCount,
   getRecentlyCreatedBooks,
   searchBooks,
+  getFavoriteBooks,
 } from '../controllers/book.controller.js';
 
 // GET /api/books/count - count all books
@@ -22,11 +23,14 @@ router.get('/recent', getRecentlyCreatedBooks);
 // GET /api/books/search - search books
 router.get('/search', searchBooks);
 
+// GET /api/books/favorites - get favorite books
+router.get('/favorites', getFavoriteBooks);
+
 // GET /api/books - get all books
 router.get('/', getBooks);
 
 // GET /api/books/:id - get book by ID
-// (must come after specific routes like 'count' or 'recent')
+// (must come after specific routes like 'count', 'recent', or 'favorites')
 router.get('/:id', getBookById);
 
 // POST /api/books - create new book

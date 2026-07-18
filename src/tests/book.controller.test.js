@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import mongoose from 'mongoose';
-import { newBook, updateBookById } from '../controllers/book.controller.js';
+import { newBook, updateBookById, getFavoriteBooks } from '../controllers/book.controller.js';
 import { Author } from '../models/author.model.js';
 import { Book } from '../models/book.model.js';
 
@@ -21,6 +21,7 @@ vi.mock('../models/book.model.js', () => {
     this.save = vi.fn().mockResolvedValue(this);
   });
   BookMock.findByIdAndUpdate = vi.fn();
+  BookMock.find = vi.fn();
   return { Book: BookMock };
 });
 
@@ -116,6 +117,44 @@ describe('Book Controller - Author Resolution', () => {
         expect.any(Object)
       );
       expect(res.status).toHaveBeenCalledWith(200);
+    });
+  });
+
+  describe('getFavoriteBooks', () => {
+    it('returns list of favorite books populated with authors', async () => {
+      const mockFavoriteBooks = [
+        { title: 'Favorite Book 1', isFavorite: true },
+        { title: 'Favorite Book 2', isFavorite: true },
+      ];
+      Book.find.mockReturnValue({
+        populate: vi.fn().mockResolvedValue(mockFavoriteBooks),
+      });
+
+      await getFavoriteBooks(req, res);
+
+      expect(Book.find).toHaveBeenCalledWith({ isFavorite: true });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        message: 'Successfully fetched favorite books.',
+        data: mockFavoriteBooks,
+      });
+    });
+
+    it('returns 500 when database error occurs', async () => {
+      Book.find.mockReturnValue({
+        populate: vi.fn().mockRejectedValue(new Error('DB Error')),
+      });
+
+      await getFavoriteBooks(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: 'Error fetching favorite books.',
+        })
+      );
     });
   });
 });

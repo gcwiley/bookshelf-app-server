@@ -5,28 +5,20 @@ import chalk from 'chalk';
 import admin from 'firebase-admin';
 import express from 'express';
 import logger from 'morgan';
-import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 
-// load secrets first
-import { loadSecrets } from './secrets.js';
-await loadSecrets(); // ensure environment variables are fully loaded
+import { connect, disconnect } from './db/connect_to_db.js';
 
-// dynamically import application dependencies after secrets are in process.env
-const { connect, disconnect } = await import('./db/connect.js');
-const { bookRouter } = await import('./routes/book.routes.js');
-const { userRouter } = await import('./routes/user.routes.js');
+// --- IMPORT ROUTES ---
+import { bookRouter } from './routes/book.routes.js';
+import { userRouter } from './routes/user.routes.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
-// get the directory name of the current module
 const __dirname = path.dirname(__filename);
-// port for the server to listen on
 const PORT = process.env.PORT || 3000;
-// CORS origin - must match your Angular app's URL
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:4200';
-// path to the Angular build output
 const angularDistPath = path.join(__dirname, './dist/bookshelf-client/browser');
 
 // --- FIREBASE CREDENTIALS ---
@@ -59,26 +51,6 @@ const app = express();
 if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
   app.set('trust proxy', 1);
 }
-
-// --- HELMET ---
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrcAttr: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'https://storage.googleapis.com'],
-        connectSrc: [
-          "'self'",
-          'https://identitytoolkit.googleapis.com',
-          'https://securetoken.googleapis.com',
-        ],
-      },
-    },
-  })
-);
 
 // --- CORS ---
 app.use(

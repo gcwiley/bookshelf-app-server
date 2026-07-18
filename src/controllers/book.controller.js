@@ -305,6 +305,25 @@ export const searchBooks = async (req, res) => {
   }
 };
 
+// GET FAVORITE BOOKS
+export const getFavoriteBooks = async (req, res) => {
+  try {
+    const favoriteBooks = await Book.find({ isFavorite: true }).populate('author');
+    res.status(200).json({
+      success: true,
+      message: 'Successfully fetched favorite books.',
+      data: favoriteBooks,
+    });
+  } catch (error) {
+    console.error('Error fetching favorite books:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching favorite books.',
+      error: error.message,
+    });
+  }
+};
+
 // UPLOAD BOOK COVER
 export const uploadBookCover = async (req, res) => {
   const { id } = req.params; // book id from URL parameters
