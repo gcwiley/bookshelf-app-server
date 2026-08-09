@@ -15,7 +15,6 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 - **File Uploads**: Integration with Firebase Cloud Storage for uploading book covers and profile images.
 - **Production-Grade Security**:
   - API Rate Limiting to prevent brute-force attacks.
-  - HTTP header protection via Helmet (including custom Content Security Policy).
   - CORS configured for secure client-side domain access.
 - **Secret Management**: Native integration with Google Cloud Secret Manager for running in production/Google App Engine, falling back to a local `.env` file in development.
 
@@ -27,7 +26,7 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 - **Framework**: Express
 - **Database**: MongoDB & Mongoose ODM
 - **Auth & Storage**: Firebase Admin SDK
-- **Security**: Helmet, Express Rate Limit, CORS
+- **Security**: Express Rate Limit, CORS
 - **Utilities**: Multer, Validator, Chalk, Dotenv
 
 ---

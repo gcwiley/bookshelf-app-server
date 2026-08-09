@@ -27,6 +27,9 @@ export async function getSecret(secretName) {
 
 // load all required secrets into process.env concurrently
 export async function loadSecrets() {
+  if (process.env.MONGO_CONNECTION_STRING) {
+    return;
+  }
   // only load secrets from Secret Manager in production (GCP App Engine)
   if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
     // fetch all secrets in parallel

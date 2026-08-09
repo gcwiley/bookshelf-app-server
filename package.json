@@ -3,11 +3,11 @@
   "description": "Bookshelf API",
   "version": "1.0.0",
   "private": true,
-  "main": "app.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "node --env-file=.env --watch src/app.js"
+    "start": "node src/server.js",
+    "dev": "node --env-file=.env --watch src/server.js"
   },
   "author": "Gregory Wiley",
   "license": "MIT",

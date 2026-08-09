@@ -52,13 +52,20 @@ if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
   app.set('trust proxy', 1);
 }
 
-// --- CORS ---
+// --- CORS & SECURITY HEADERS ---
 app.use(
   cors({
     origin: CORS_ORIGIN,
     credentials: true,
   })
 );
+
+// Cross-Origin-Opener-Policy - allows the application to open a pop-up window
+// without being blocked by COOP/COEP security policies
+app.use((_req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  next();
+});
 
 // --- MORGAN LOGGER ---
 app.use(logger('dev'));
@@ -110,9 +117,10 @@ app.use((error, req, res, next) => {
   if (res.headersSent) {
     return next(error);
   }
-  res
-    .status(500)
-    .json({ error: 'Internal Server Error', message: error.message });
+  res.status(500).json({
+    error: 'Internal Server Error',
+    ...(process.env.NODE_ENV !== 'production' && { message: error.message }),
+  });
 });
 
 // --- STARTUP SEQUENCE ---
