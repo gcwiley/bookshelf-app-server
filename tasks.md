@@ -2,6 +2,6 @@
 
 * fix auth / sign in issue
 
-* set up domain name
-
 * update author model
+
+* add gregwiley.app domain to web application
