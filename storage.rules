@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /covers/{allPaths=**} {
+      // Allow public read access so any visitor can view book covers
+      allow read: if true;
+
+      // Allow write access for authenticated users (with image file type and size validation)
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

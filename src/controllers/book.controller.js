@@ -1,57 +1,6 @@
 import mongoose from 'mongoose';
 import { Book } from '../models/book.model.js';
-import { Author } from '../models/author.model.js';
-
-const escapeRegex = (string) => {
-  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-};
-
-const resolveAuthor = async (author) => {
-  if (!author) return undefined;
-
-  // If author is an object, try to extract the name or ID
-  let authorValue = author;
-  if (typeof author === 'object') {
-    if (author._id) {
-      authorValue = author._id;
-    } else if (author.id) {
-      authorValue = author.id;
-    } else if (author.name) {
-      authorValue = author.name;
-    }
-  }
-
-  if (typeof authorValue === 'string') {
-    const trimmed = authorValue.trim();
-    if (!trimmed) return undefined;
-
-    // Check if it's a valid ObjectId
-    if (mongoose.Types.ObjectId.isValid(trimmed)) {
-      const authorDoc = await Author.findById(trimmed);
-      if (authorDoc) {
-        return authorDoc._id;
-      }
-    }
-
-    // Try finding by name (case-insensitive)
-    let authorDoc = await Author.findOne({
-      name: { $regex: new RegExp('^' + escapeRegex(trimmed) + '$', 'i') },
-    });
-
-    if (!authorDoc) {
-      authorDoc = new Author({ name: trimmed });
-      await authorDoc.save();
-    }
-    return authorDoc._id;
-  }
-
-  // If it's already an ObjectId instance
-  if (authorValue instanceof mongoose.Types.ObjectId) {
-    return authorValue;
-  }
-
-  return undefined;
-};
+import { resolveAuthor } from '../utils/author.utils.js';
 
 // NEW BOOK
 export const newBook = async (req, res) => {
@@ -136,8 +85,14 @@ export const getBooks = async (req, res) => {
 
 // GET BOOK BY ID
 export const getBookById = async (req, res) => {
-  // find id of book from params.
   const _id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid book ID format.',
+    });
+  }
 
   try {
     // filter by _id
@@ -168,8 +123,15 @@ export const getBookById = async (req, res) => {
 
 // UPDATE BOOK BY ID
 export const updateBookById = async (req, res) => {
-  // get the id from params
   const _id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid book ID format.',
+    });
+  }
+
   try {
     const updateData = { ...req.body };
     if (updateData.author !== undefined) {
@@ -204,11 +166,18 @@ export const updateBookById = async (req, res) => {
 
 // DELETE BOOK BY ID
 export const deleteBookById = async (req, res) => {
+  const _id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid book ID format.',
+    });
+  }
+
   try {
     // finds and deletes a book that takes id into account
-    const book = await Book.findByIdAndDelete({
-      _id: req.params.id,
-    });
+    const book = await Book.findByIdAndDelete(_id);
 
     // if no book is found
     if (!book) {
