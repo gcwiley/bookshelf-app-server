@@ -24,7 +24,11 @@ const angularDistPath = path.join(__dirname, './dist/bookshelf-client/browser');
 // --- FIREBASE CREDENTIALS ---
 let serviceAccountCredential;
 
-if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
+if (
+  process.env.NODE_ENV === 'production' ||
+  process.env.GAE_ENV ||
+  process.env.K_SERVICE
+) {
   serviceAccountCredential = admin.credential.applicationDefault();
 } else {
   // local development fallback
@@ -47,8 +51,12 @@ const bucket = admin.storage().bucket();
 // --- EXPRESS SETUP ---
 const app = express();
 
-// trust first proxy (GAE load balancer)
-if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
+// trust first proxy (GAE / Cloud Run load balancer)
+if (
+  process.env.NODE_ENV === 'production' ||
+  process.env.GAE_ENV ||
+  process.env.K_SERVICE
+) {
   app.set('trust proxy', 1);
 }
 
@@ -90,7 +98,11 @@ const apiLimiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: 'Too many requests from this IP, please try again after 15 minutes.',
+  message: {
+    success: false,
+    message:
+      'Too many requests from this IP, please try again after 5 minutes.',
+  },
 });
 
 // apply the rate limiting middleware to API calls

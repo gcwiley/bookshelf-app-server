@@ -32,7 +32,7 @@ export const authenticateToken = async (req, res, next) => {
     } else {
       console.error('System Error verifying Firebase ID token:', error);
     }
-    
+
     return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };

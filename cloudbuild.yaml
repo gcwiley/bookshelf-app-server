@@ -1,0 +1,34 @@
+# Google Cloud Build configuration for building with Buildpacks and deploying to Cloud Run
+# Usage: gcloud builds submit --region=us-east4 --config=cloudbuild.yaml
+
+steps:
+  # Step 1: Build and push the container image using Google Cloud Buildpacks
+  - name: 'gcr.io/k8s-skaffold/pack'
+    entrypoint: 'pack'
+    args:
+      - 'build'
+      - 'us-east4-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/bookshelf-app:$BUILD_ID'
+      - '--builder=gcr.io/buildpacks/builder:latest'
+      - '--network=cloudbuild'
+      - '--publish'
+
+  # Step 2: Deploy the built container image to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'bookshelf-app'
+      - '--image=us-east4-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/bookshelf-app:$BUILD_ID'
+      - '--region=us-east4'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--max-instances=5'
+      - '--concurrency=10'
+
+images:
+  - 'us-east4-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/bookshelf-app:$BUILD_ID'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+

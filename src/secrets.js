@@ -1,5 +1,7 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
+import config from '../config.json' with { type: 'json' };
+
 // singleton pattern for Secret Manager client
 let client;
 
@@ -7,11 +9,15 @@ let client;
 export async function getSecret(secretName) {
   // initialize client if it doesn't exist
   if (!client) {
-    client = new SecretManagerServiceClient()
+    client = new SecretManagerServiceClient();
   }
-  // allow overriding the project ID if secrets are located in a different GCP project
+  // allow overriding the project ID if secrets are located in a different GCP project,
+  // or auto-detect from the GCP metadata server on Cloud Run / App Engine
   const projectId =
-    process.env.SECRETS_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
+    process.env.SECRETS_PROJECT_ID ||
+    config.SECRETS_PROJECT_ID ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    (await client.getProjectId?.().catch(() => undefined));
   if (!projectId) {
     // throw an error if the project ID is not set, since it is required to access secrets
     throw new Error(
@@ -30,8 +36,14 @@ export async function loadSecrets() {
   if (process.env.MONGO_CONNECTION_STRING) {
     return;
   }
-  // only load secrets from Secret Manager in production (GCP App Engine)
-  if (process.env.NODE_ENV === 'production' || process.env.GAE_ENV) {
+  // only load secrets from Secret Manager in production (GCP App Engine / Cloud Run)
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.GAE_ENV ||
+    process.env.K_SERVICE
+  ) {
+    process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
     // fetch all secrets in parallel
     const [mongoConn, mongoPass, corsOrigin] = await Promise.all([
       getSecret('MONGO_CONNECTION_STRING'),
@@ -42,6 +54,8 @@ export async function loadSecrets() {
     process.env.MONGO_CONNECTION_STRING = mongoConn;
     process.env.MONGO_DATABASE_PASSWORD = mongoPass;
     process.env.CORS_ORIGIN = corsOrigin;
+    process.env.DATABASE_NAME =
+      process.env.DATABASE_NAME || config.DATABASE_NAME || 'mongo-database';
 
     console.log('Secrets loaded from Google Secret Manager in parallel.');
   } else {

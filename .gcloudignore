@@ -1,12 +1,15 @@
-# this includes common exclusions to keep your deployment clean and secure:
+# This file specifies files that are *not* uploaded to Google Cloud
 
 .gcloudignore
 .git
 .gitignore
 node_modules/
+credentials/
 .env
 .vscode/
 .idx/
+.claude/
+.gemini/
 *.log
 to-do-list.md
 eslint.config.js

@@ -5,12 +5,12 @@ import { defineConfig } from 'eslint/config';
 export default defineConfig([
   {
     // this applies to all files and is best place for ignores
-    ignores: ['node_modules/**'],
+    ignores: ['node_modules/**', 'src/dist/**'],
   },
   {
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
     extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: globals.node },
   },
 ]);

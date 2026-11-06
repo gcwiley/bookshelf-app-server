@@ -16,18 +16,20 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 - **Production-Grade Security**:
   - API Rate Limiting to prevent brute-force attacks.
   - CORS configured for secure client-side domain access.
-- **Secret Management**: Native integration with Google Cloud Secret Manager for running in production/Google App Engine, falling back to a local `.env` file in development.
+- **Secret Management**: Native integration with Google Cloud Secret Manager for running in production on Google Cloud Run, falling back to a local `.env` file in development.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Node.js (ES Modules)
+- **Runtime**: Node.js 24 (ES Modules)
 - **Framework**: Express
 - **Database**: MongoDB & Mongoose ODM
 - **Auth & Storage**: Firebase Admin SDK
+- **Deployment**: Google Cloud Run & Cloud Buildpacks
 - **Security**: Express Rate Limit, CORS
-- **Utilities**: Multer, Validator, Chalk, Dotenv
+- **Utilities**: Multer, Validator, Chalk
+- **Testing**: Vitest
 
 ---
 
@@ -42,10 +44,14 @@ bookshelf-server/
 │   ├── middleware/       # Express middlewares (auth, file uploads)
 │   ├── models/           # Mongoose schemas (book, author, user)
 │   ├── routes/           # Router entry points (book.routes.js, user.routes.js)
-│   ├── tests/            # Test suites
+│   ├── tests/            # Vitest unit test suites
+│   ├── utils/            # Helper utilities (author resolution, regex escaping)
 │   ├── app.js            # Main Express application & server startup
-│   └── secrets.js        # Google Secret Manager resolver
+│   ├── secrets.js        # Google Secret Manager resolver
+│   └── server.js         # Entry point (loads secrets before importing app.js)
 ├── .env                  # Local environment configuration file (git-ignored)
+├── cloudbuild.yaml       # Google Cloud Build & Cloud Run deployment config
+├── config.json           # Non-sensitive project defaults (SECRETS_PROJECT_ID, DATABASE_NAME)
 ├── package.json          # Project metadata and dependencies
 └── README.md             # Project documentation
 ```
@@ -91,6 +97,24 @@ npm run dev
 npm start
 ```
 
+### 4. Run Unit Tests
+
+```bash
+npm test
+```
+
+### 5. Deploy to Google Cloud Run
+
+```bash
+npm run deploy
+```
+
+Or via Google Cloud Build (`cloudbuild.yaml`):
+
+```bash
+gcloud builds submit --region=us-east4 --config=cloudbuild.yaml
+```
+
 ---
 
 ## 🔗 API Endpoints
@@ -100,6 +124,7 @@ npm start
 - `GET /api/books` - Retrieve books (paginated). Query params: `page`, `limit`.
 - `GET /api/books/count` - Get total number of books in the collection.
 - `GET /api/books/recent` - Get 5 most recently added books.
+- `GET /api/books/favorites` - Get all books marked as favorites.
 - `GET /api/books/search` - Search books by title or summary. Query param: `q`.
 - `GET /api/books/:id` - Retrieve a specific book by MongoDB ID.
 - `POST /api/books` - Create a new book.
