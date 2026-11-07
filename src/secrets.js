@@ -1,7 +1,5 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
-import config from '../config.json' with { type: 'json' };
-
 // singleton pattern for Secret Manager client
 let client;
 
@@ -15,7 +13,6 @@ export async function getSecret(secretName) {
   // or auto-detect from the GCP metadata server on Cloud Run / App Engine
   const projectId =
     process.env.SECRETS_PROJECT_ID ||
-    config.SECRETS_PROJECT_ID ||
     process.env.GOOGLE_CLOUD_PROJECT ||
     (await client.getProjectId?.().catch(() => undefined));
   if (!projectId) {
@@ -54,8 +51,7 @@ export async function loadSecrets() {
     process.env.MONGO_CONNECTION_STRING = mongoConn;
     process.env.MONGO_DATABASE_PASSWORD = mongoPass;
     process.env.CORS_ORIGIN = corsOrigin;
-    process.env.DATABASE_NAME =
-      process.env.DATABASE_NAME || config.DATABASE_NAME || 'mongo-database';
+    process.env.DATABASE_NAME = process.env.DATABASE_NAME || 'mongo-database';
 
     console.log('Secrets loaded from Google Secret Manager in parallel.');
   } else {

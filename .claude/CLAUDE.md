@@ -14,7 +14,7 @@
 ## Architecture & Startup Order
 
 - **`src/server.js` (Entry Point)**: Must always run `await loadSecrets()` **before** dynamically importing `./app.js` (`await import('./app.js')`) so environment variables from Google Secret Manager are populated in `process.env` before `app.js` initializes CORS, Firebase, and database connections.
-- **`src/secrets.js` & `config.json`**: Fetches `MONGO_CONNECTION_STRING`, `MONGO_DATABASE_PASSWORD`, and `CORS_ORIGIN` concurrently from Google Cloud Secret Manager when running in production (`NODE_ENV === 'production'`, `K_SERVICE`, or `GAE_ENV`). Reads non-sensitive project defaults (`SECRETS_PROJECT_ID` and `DATABASE_NAME`) from `config.json` (with fallback to `process.env` and `client.getProjectId()`).
+- **`src/secrets.js`**: Fetches `MONGO_CONNECTION_STRING`, `MONGO_DATABASE_PASSWORD`, and `CORS_ORIGIN` concurrently from Google Cloud Secret Manager when running in production (`NODE_ENV === 'production'`, `K_SERVICE`, or `GAE_ENV`). Resolves the GCP project ID via `SECRETS_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`, or `client.getProjectId()`.
 - **`src/app.js`**: Configures Express, Firebase Admin (using `applicationDefault()` in production/Cloud Run and `credentials/service-account.json` locally), CORS, rate limiting (`/api`), static file serving, API routes (`/api/books`, `/api/users`), SPA catch-all (`*`), and graceful shutdown (`SIGINT` / `SIGTERM`).
 - **`src/db/connect_to_db.js`**: Manages the Mongoose connection (`strictQuery: true`, `autoIndex` disabled in production).
 

@@ -4,7 +4,7 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Book Collection Management**: Full CRUD endpoints for managing books, including paginated list, search, and count functionality.
 - **Robust Model Validation**: Advanced schema validations including:
@@ -20,7 +20,7 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js 24 (ES Modules)
 - **Framework**: Express
@@ -33,7 +33,7 @@ A robust, modern **Node.js / Express** REST API backend powering the Bookshelf l
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 bookshelf-server/
@@ -51,14 +51,13 @@ bookshelf-server/
 │   └── server.js         # Entry point (loads secrets before importing app.js)
 ├── .env                  # Local environment configuration file (git-ignored)
 ├── cloudbuild.yaml       # Google Cloud Build & Cloud Run deployment config
-├── config.json           # Non-sensitive project defaults (SECRETS_PROJECT_ID, DATABASE_NAME)
 ├── package.json          # Project metadata and dependencies
 └── README.md             # Project documentation
 ```
 
 ---
 
-## ⚙️ Configuration & Environment Variables
+## Configuration & Environment Variables
 
 Create a `.env` file in the root directory. The application supports the following variables:
 

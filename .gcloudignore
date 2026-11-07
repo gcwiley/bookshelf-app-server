@@ -11,5 +11,5 @@ credentials/
 .claude/
 .gemini/
 *.log
-to-do-list.md
+tasks.md
 eslint.config.js

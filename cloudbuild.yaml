@@ -25,6 +25,7 @@ steps:
       - '--min-instances=0'
       - '--max-instances=5'
       - '--concurrency=10'
+      - '--set-env-vars=NODE_ENV=production,SECRETS_PROJECT_ID=lyrical-amulet-495920-u8,DATABASE_NAME=mongo-database'
 
 images:
   - 'us-east4-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/bookshelf-app:$BUILD_ID'
